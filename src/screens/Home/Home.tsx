@@ -1,14 +1,19 @@
+import { useState } from 'react'
 import { Text, View, TextInput, TouchableOpacity, FlatList, Alert } from 'react-native'
 import { Participant } from '../../components'
 import { styles } from './styles'
 
 export const Home = () => {
-  const participants = ['Frederico', 'Lucas', 'Isaías', 'João', 'Pedro', 'Rafael', 'Ricardo', 'Rodrigo', 'Thiago', 'Vitor', 'Wesley', 'Yuri', 'Zé']
+  const [ participants, setParticipants ] = useState<string[]>([])
+  const [ participantName, setParticipantName ] = useState<string>('')
 
   const handleParticipantAdd = () => {
-    if(participants.includes('Frederico')) {
+    if(participants.includes(participantName)) {
       return Alert.alert('Participant already exists')
     }
+
+    setParticipants(prevState => [...prevState, participantName])
+    setParticipantName('')
   }
 
   const handleParticipantRemove = (name: string) => {
@@ -16,7 +21,7 @@ export const Home = () => {
       {
         text: 'Yes',
         style: 'destructive',
-        onPress: () => Alert.alert('Participant removed')
+        onPress: () => setParticipants(participants.filter(participant => participant !== name))
       },
       { 
         text: 'No',
@@ -36,6 +41,8 @@ export const Home = () => {
           placeholder="Guest name"
           placeholderTextColor="#6B6B6B"
           keyboardType="name-phone-pad"
+          onChangeText={setParticipantName}
+          value={participantName}
         />
         
         <TouchableOpacity style={styles.button} onPress={handleParticipantAdd}>
@@ -45,7 +52,7 @@ export const Home = () => {
       
       <FlatList 
         data={participants}
-        keyExtractor={item => item}
+        keyExtractor={(item) => item}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={(
           <Text style={styles.listEmptyText}>
